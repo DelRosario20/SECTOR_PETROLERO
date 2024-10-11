@@ -2,6 +2,8 @@
 library(readxl)
 library(tidyverse)
 library(lubridate)
+library(psych)
+
 
 setwd("C:/Users/USER/Documents/YRF_PROJECT/")
 
@@ -201,7 +203,6 @@ data_3 = data_2 %>%
 
 data_4 = data_3 %>%
   pivot_wider(id_cols = c("date"), names_from = "Indicador", values_from = c("value"))
-
 # Convertir valores de caracteres a numericos y fechas en formato de fechas
 # Cambiar formato de fechas
 
@@ -228,17 +229,22 @@ sum(is.na(data_8))
 str(data_8)
 colSums(is.na(data_8))
 
+# Tendencia Central -------------------------------------------------------
+# Opción de análisis: "describe" y "summary"
+# Producción de Petroleo Crudo-TOTAL NACIONAL
+describe(data_8$`TOTAL NACIONAL-Producción de Petróleo Crudo`)
+
+# Porducción de petróleo crudo fiscalizada (miles de barriles)- TOTAL NACIONAL
+describe(data_8$`TOTAL NACIONAL-PRODUCCIÓN DE PETRÓLEO CRUDO FISCALIZADA (Miles de barriles)`)
+
+#Exportaciones de petróleo cudo (miles de barriles)-TOTAL NACIONAL
+describe(data_8$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
+
+# Importaciones de derivados-TOTAL NACIONAL
+describe(data_8$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
+
+# Ingresos de EP PETROECUADOR por exportaciones (miles de USD)
+describe(data_8$`Ingresos de EP PETROECUADOR por Exportaciones (miles de USD)`)
 
 # Gráfica -----------------------------------------------------------------
-# Estadística de tendencia central (Distribución, linea temporal, fechas, valores distintos)
-# Medidas básicas
-# Promedio
 
-mean(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)
-
-# Cuartiles
-
-
-# Valor de WIT
-
-mean(data_6$`Precio Promedio Mensual Brent`)
