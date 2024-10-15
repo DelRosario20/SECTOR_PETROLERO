@@ -211,10 +211,17 @@ data_5 = data_4 %>%
   select(fecha,everything()) %>%
   select(-date)
 
+data_6$fecha <- as.Date(data_6$fecha, format = "%Y-%m-%d")
+
+
 # Cambiar formato valores
+
+data_6$fecha <- as.Date(data_6$fecha, format = "%Y-%m-%d")
 
 data_6= data_5%>%
   mutate(across(where(is.character), as.numeric))
+
+data_6$fecha <- as.Date(data_6$fecha, format = "%Y-%m-%d")
 
 # Casos NA
 
@@ -247,4 +254,28 @@ describe(data_8$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
 describe(data_8$`Ingresos de EP PETROECUADOR por Exportaciones (miles de USD)`)
 
 # Gráfica -----------------------------------------------------------------
+ggplot(data_6, aes(x = fecha)) +
+  geom_line(aes(y = `TOTAL NACIONAL-Producción de Petróleo Crudo`, color = "Producción de Petróleo Crudo"), size = 1) +
+  geom_point(aes(y = `TOTAL NACIONAL-Producción de Petróleo Crudo`, color = "Datos Puntuales"), size = 1.5) +
+  labs(
+    title = "Evolución de la Producción de Petróleo Crudo en Ecuador (2007 - 2024)",
+    x = "Fecha",
+    y = "Producción de Petróleo Crudo (barriles)",
+    color = "",
+    ) +
+  scale_color_manual(
+    values = c("Producción de Petróleo Crudo" = "blue", "Datos Puntuales" = "red")
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    limits = c(as.Date("2007-01-01"), as.Date("2024-06-30"))
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 90, hjust = 1),
+    legend.position = "bottom",  # Coloca la leyenda debajo del gráfico
+    legend.title = element_text(face = "bold")  # Resalta el título de la leyenda
+  )
 
