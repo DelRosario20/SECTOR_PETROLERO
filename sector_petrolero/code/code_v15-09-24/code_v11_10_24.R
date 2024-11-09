@@ -5,7 +5,6 @@ library(tidyverse)
 library(lubridate)
 library(psych)
 } # libreria
-?describe()
 
 setwd("C:/Users/USER/Documents/YRF_PROJECT/")
 
@@ -232,27 +231,61 @@ data_7 = data_6 %>%
 data_8 = data_7 %>% 
   mutate_all(~replace_na(., 0))
 }
-sum(is.na(data_6))
 colSums(is.na(data_6))
 
   # Estadística descriptiva -------------------------------------------------------
-# Opción de análisis: "describe" y "summary"
-# Producción de Petroleo Crudo-TOTAL NACIONAL
+# TOTAL NACIONAL-Producción de Petróleo Crudo 
+summary(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)
 describe(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)
+var(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`, na.rm = TRUE)
 
-# Porducción de petróleo crudo fiscalizada (miles de barriles)- TOTAL NACIONAL
-describe(data_6$`TOTAL NACIONAL-PRODUCCIÓN DE PETRÓLEO CRUDO FISCALIZADA (Miles de barriles)`)
+# TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles) 
+summary(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
+describe(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
+var(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
 
-#Exportaciones de petróleo cudo (miles de barriles)-TOTAL NACIONAL
-describe(data_6`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
+# TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles) 
+summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
+describe(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
+var(summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`))
 
-# Importaciones de derivados-TOTAL NACIONAL
+# TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles) 
+summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
+describe(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
+var(summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`))
+
+# TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) 
+summary(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
 describe(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
+var(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
+  
+# TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
+summary(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)
+describe(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)
+var(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)
 
-# Ingresos de EP PETROECUADOR por exportaciones (miles de USD)
-describe(data_6$`Ingresos de EP PETROECUADOR por Exportaciones (miles de USD)`)
+# TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) 
+summary(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)
+describe(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)
+var(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)
+
+# TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) 
+summary(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)
+describe(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)
+var(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)
+
+# Precio Promedio Mensual WTI 
+summary(data_6$`Precio Promedio Mensual WTI`)
+describe(data_6$`Precio Promedio Mensual WTI`)
+var(data_6$`Precio Promedio Mensual WTI`)
+
+# Precio Promedio Mensual Brent 
+summary(data_6$`Precio Promedio Mensual Brent`)
+describe(data_6$`Precio Promedio Mensual Brent`)
+var(data_6$`Precio Promedio Mensual Brent`)
 
 # Gráfica -----------------------------------------------------------------
+{
 ggplot(data_6, aes(x = fecha)) +
   geom_line(aes(y = `TOTAL NACIONAL-Producción de Petróleo Crudo`, color = "Producción de Petróleo Crudo"), size = 1) +
   geom_point(aes(y = `TOTAL NACIONAL-Producción de Petróleo Crudo`, color = "Datos Puntuales"), size = 1.5) +
@@ -277,4 +310,48 @@ ggplot(data_6, aes(x = fecha)) +
     legend.position = "bottom",  # Coloca la leyenda debajo del gráfico
     legend.title = element_text(face = "bold")  # Resalta el título de la leyenda
   )
+}
+
+# TOTAL NACIONAL-Producción de Petróleo Crudo 
+ggplot(data_clean3, aes(x = fecha, y = `TOTAL NACIONAL-Producción de Petróleo Crudo`))+
+  geom_line()+
+  geom_point()+
+  theme_minimal() +
+  theme_classic()
+
+
+# TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles) 
+
+
+
+# TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles) 
+
+
+
+# TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles) 
+
+
+
+# TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) 
+
+
+
+# TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
+
+
+
+# TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) 
+
+
+
+# TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) 
+
+
+
+# Precio Promedio Mensual WTI 
+
+
+
+# Precio Promedio Mensual Brent 
+
 
