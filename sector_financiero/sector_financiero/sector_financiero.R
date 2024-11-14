@@ -9,9 +9,10 @@ library(stats)
 library(modeest)
 }
 
-
 # Limpieza ----------------------------------------------------------------
-data <- read_excel("C:/Users/USER/Documents/YRF_PROJECT/sector_financiero/data/modificada/BMS_CAMBIOS.xlsx")
+setwd("C:/Users/USER/Documents/YRF_PROJECT/")
+
+data <- read_excel("sector_financiero/data/modificada/BMS_CAMBIOS.xlsx")
 
 {
 colnames(data) = c("año", "mes", "dia","reservas_internacionales", "pasivos_monetarios", "emision_monetaria",
@@ -89,6 +90,9 @@ data_clean3[] <- lapply(data_clean3, function(x) {
   return(x)
 })
 
+# Rango de fechas
+data_clean4 <- subset(data_clean3, fecha >= as.Date("2007-01-01") & fecha <= as.Date("2024-08-31"))
+
 # Eliminar valores NA
 
 
@@ -164,39 +168,116 @@ colSums(is.na(data_clean3))
 
 # Gráfica -----------------------------------------------------------------
 # Reservas internacionales
-ggplot(data_clean3, aes(x = fecha, y = reservas_internacionales))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
-
+{
+mean_1<-mean(data_clean3$reservas_internacionales)/1000
+plot_reser_int <- ggplot(data_clean3, aes(x = fecha, y = reservas_internacionales/1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "Rservas Internacionales (En millones de dólares)",
+      x = "PERIODO",
+      y = "Reservas Internacionales",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(4.554053), linetype = "dashed", color = "red")
+  
+pdf("plot_reser_int.pdf", height = 5.5, width = 8)
+plot_reser_int
+dev.off()
+}  
+  
 #Pasivos monenetarios
-ggplot(data_clean3, aes(x = fecha, y = pasivos_monetarios))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
+{
+  mean_2<-mean(data_clean3$pasivos_monetarios)/1000
+  plot_pasiv_mon <- ggplot(data_clean3, aes(x = fecha, y = pasivos_monetarios/1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "Pasivos monetarios (En millones de dólares)",
+      x = "PERIODO",
+      y = "Pasivos monetarios",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(3.617957), linetype = "dashed", color = "red")
+  
+  pdf("plot_pasiv_mon.pdf", height = 5.5, width = 8)
+  plot_pasiv_mon
+  dev.off()
+}
 
 # Emisión monetaria
-ggplot(data_clean3, aes(x = fecha, y = emision_monetaria))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
+{
+  mean_3<-mean(data_clean3$emision_monetaria)
+  plot_emis_mon <- ggplot(data_clean3, aes(x = fecha, y = emision_monetaria)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "Pasivos monetarios (En millones de dólares)",
+      x = "PERIODO",
+      y = "Pasivos monetarios",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(mean_3), linetype = "dashed", color = "red")
+  
+  pdf("plot_pasiv_mon.pdf", height = 5.5, width = 8)
+  plot_pasiv_mon
+  dev.off()
+  }
+
 
 # Reservas bancarias
-ggplot(data_clean3, aes(x = fecha, y = reservas_bancarias))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
+{
+  mean_4<-mean(data_clean3$reservas_bancarias)/1000
+  plot_rser_banc <- ggplot(data_clean3, aes(x = fecha, y = reservas_bancarias /1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "Reservas bancarias (En millones de dólares)",
+      x = "PERIODO",
+      y = "Rservas bancarias",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(mean_4), linetype = "dashed", color = "red")
+  
+  pdf("plot_rser_banc.pdf", height = 5.5, width = 8)
+  plot_rser_banc
+  dev.off()
+  }
 
 # Depositos a la vista
-ggplot(data_clean3, aes(x = fecha, y = depositos_a_la_vista))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
+{
+  mean_5<-mean(data_clean3$depositos_a_la_vista, na.rm = TRUE)/1000 
+  plot_dep_vista <- ggplot(data_clean3, aes(x = fecha, y = depositos_a_la_vista /1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "Depositos a la vista (En millones de dólares)",
+      x = "PERIODO",
+      y = "Depositos a la vista",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(mean_5), linetype = "dashed", color = "red")
+  
+  pdf("plot_rser_banc.pdf", height = 5.5, width = 8)
+  plot_rser_banc
+  dev.off()
+  }
+
 
 # Cuasidinero total
 ggplot(data_clean3, aes(x = fecha, y = cuasidinero_total))+

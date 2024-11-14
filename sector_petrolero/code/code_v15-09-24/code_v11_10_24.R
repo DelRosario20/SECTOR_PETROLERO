@@ -4,11 +4,12 @@ library(readxl)
 library(tidyverse)
 library(lubridate)
 library(psych)
+library(stargazer)
 } # libreria
 
 setwd("C:/Users/USER/Documents/YRF_PROJECT/")
 
-data_inicial = read_excel("data/name_variable/SerieCifrasPetroleras_1_v.xlsx", skip=1)
+data_inicial = read_excel("sector_petrolero/data/name_variable/SerieCifrasPetroleras_2_v.xlsx", skip=1)
 
 {
 data_1 = data_inicial %>%
@@ -157,12 +158,12 @@ data_1 = data_inicial %>%
            )
 } # Nombre de las variables
 
+colnames(data_1) = c("Indicador", "2007_01", "2007_02", "2007_03", "2007_04", "2007_05", "2007_06", "2007_07", "2007_08", "2007_09", "2007_10", "2007_11", "2007_12", "2008_01", "2008_02", "2008_03", "2008_04", "2008_05", "2008_06", "2008_07", "2008_08", "2008_09", "2008_10", "2008_11", "2008_12", "2009_01", "2009_02", "2009_03", "2009_04", "2009_05", "2009_06", "2009_07", "2009_08", "2009_09", "2009_10", "2009_11", "2009_12", "2010_01", "2010_02", "2010_03", "2010_04", "2010_05", "2010_06", "2010_07", "2010_08", "2010_09", "2010_10", "2010_11", "2010_12", "2011_01", "2011_02", "2011_03", "2011_04", "2011_05", "2011_06", "2011_07", "2011_08", "2011_09", "2011_10", "2011_11", "2011_12", "2012_01", "2012_02", "2012_03", "2012_04", "2012_05", "2012_06", "2012_07", "2012_08", "2012_09", "2012_10", "2012_11", "2012_12", "2013_01", "2013_02", "2013_03", "2013_04", "2013_05", "2013_06", "2013_07", "2013_08", "2013_09", "2013_10", "2013_11", "2013_12", "2014_01", "2014_02", "2014_03", "2014_04", "2014_05", "2014_06", "2014_07", "2014_08", "2014_09", "2014_10", "2014_11", "2014_12", "2015_01", "2015_02", "2015_03", "2015_04", "2015_05", "2015_06", "2015_07", "2015_08", "2015_09", "2015_10", "2015_11", "2015_12", "2016_01", "2016_02", "2016_03", "2016_04", "2016_05", "2016_06", "2016_07", "2016_08", "2016_09", "2016_10", "2016_11", "2016_12", "2017_01", "2017_02", "2017_03", "2017_04", "2017_05", "2017_06", "2017_07", "2017_08", "2017_09", "2017_10", "2017_11", "2017_12", "2018_01", "2018_02", "2018_03", "2018_04", "2018_05", "2018_06", "2018_07", "2018_08", "2018_09", "2018_10", "2018_11", "2018_12", "2019_01", "2019_02", "2019_03", "2019_04", "2019_05", "2019_06", "2019_07", "2019_08", "2019_09", "2019_10", "2019_11", "2019_12", "2020_01", "2020_02", "2020_03", "2020_04", "2020_05", "2020_06", "2020_07", "2020_08", "2020_09", "2020_10", "2020_11", "2020_12", "2021_01", "2021_02", "2021_03", "2021_04", "2021_05", "2021_06", "2021_07", "2021_08", "2021_09", "2021_10", "2021_11", "2021_12", "2022_01", "2022_02", "2022_03", "2022_04", "2022_05", "2022_06", "2022_07", "2022_08", "2022_09", "2022_10", "2022_11", "2022_12", "2023_01", "2023_02", "2023_03", "2023_04", "2023_05", "2023_06", "2023_07", "2023_08", "2023_09", "2023_10", "2023_11", "2023_12", "2024_01", "2024_02", "2024_03", "2024_04", "2024_05", "2024_06", "2024_07","2024_08")
+
+data_2 = select(data_1, "Indicador", "2007_01", "2007_02", "2007_03", "2007_04", "2007_05", "2007_06", "2007_07", "2007_08", "2007_09", "2007_10", "2007_11", "2007_12", "2008_01", "2008_02", "2008_03", "2008_04", "2008_05", "2008_06", "2008_07", "2008_08", "2008_09", "2008_10", "2008_11", "2008_12", "2009_01", "2009_02", "2009_03", "2009_04", "2009_05", "2009_06", "2009_07", "2009_08", "2009_09", "2009_10", "2009_11", "2009_12", "2010_01", "2010_02", "2010_03", "2010_04", "2010_05", "2010_06", "2010_07", "2010_08", "2010_09", "2010_10", "2010_11", "2010_12", "2011_01", "2011_02", "2011_03", "2011_04", "2011_05", "2011_06", "2011_07", "2011_08", "2011_09", "2011_10", "2011_11", "2011_12", "2012_01", "2012_02", "2012_03", "2012_04", "2012_05", "2012_06", "2012_07", "2012_08", "2012_09", "2012_10", "2012_11", "2012_12", "2013_01", "2013_02", "2013_03", "2013_04", "2013_05", "2013_06", "2013_07", "2013_08", "2013_09", "2013_10", "2013_11", "2013_12", "2014_01", "2014_02", "2014_03", "2014_04", "2014_05", "2014_06", "2014_07", "2014_08", "2014_09", "2014_10", "2014_11", "2014_12", "2015_01", "2015_02", "2015_03", "2015_04", "2015_05", "2015_06", "2015_07", "2015_08", "2015_09", "2015_10", "2015_11", "2015_12", "2016_01", "2016_02", "2016_03", "2016_04", "2016_05", "2016_06", "2016_07", "2016_08", "2016_09", "2016_10", "2016_11", "2016_12", "2017_01", "2017_02", "2017_03", "2017_04", "2017_05", "2017_06", "2017_07", "2017_08", "2017_09", "2017_10", "2017_11", "2017_12", "2018_01", "2018_02", "2018_03", "2018_04", "2018_05", "2018_06", "2018_07", "2018_08", "2018_09", "2018_10", "2018_11", "2018_12", "2019_01", "2019_02", "2019_03", "2019_04", "2019_05", "2019_06", "2019_07", "2019_08", "2019_09", "2019_10", "2019_11", "2019_12", "2020_01", "2020_02", "2020_03", "2020_04", "2020_05", "2020_06", "2020_07", "2020_08", "2020_09", "2020_10", "2020_11", "2020_12", "2021_01", "2021_02", "2021_03", "2021_04", "2021_05", "2021_06", "2021_07", "2021_08", "2021_09", "2021_10", "2021_11", "2021_12", "2022_01", "2022_02", "2022_03", "2022_04", "2022_05", "2022_06", "2022_07", "2022_08", "2022_09", "2022_10", "2022_11", "2022_12", "2023_01", "2023_02", "2023_03", "2023_04", "2023_05", "2023_06", "2023_07", "2023_08", "2023_09", "2023_10", "2023_11", "2023_12", "2024_01", "2024_02", "2024_03", "2024_04", "2024_05", "2024_06", "2024_07","2024_08")
+
 data_2 %>% 
   count(Indicador, sort = TRUE)
-
-colnames(data_1) = c("Indicador", "2007_01", "2007_02", "2007_03", "2007_04", "2007_05", "2007_06", "2007_07", "2007_08", "2007_09", "2007_10", "2007_11", "2007_12", "2008_01", "2008_02", "2008_03", "2008_04", "2008_05", "2008_06", "2008_07", "2008_08", "2008_09", "2008_10", "2008_11", "2008_12", "2009_01", "2009_02", "2009_03", "2009_04", "2009_05", "2009_06", "2009_07", "2009_08", "2009_09", "2009_10", "2009_11", "2009_12", "2010_01", "2010_02", "2010_03", "2010_04", "2010_05", "2010_06", "2010_07", "2010_08", "2010_09", "2010_10", "2010_11", "2010_12", "2011_01", "2011_02", "2011_03", "2011_04", "2011_05", "2011_06", "2011_07", "2011_08", "2011_09", "2011_10", "2011_11", "2011_12", "2012_01", "2012_02", "2012_03", "2012_04", "2012_05", "2012_06", "2012_07", "2012_08", "2012_09", "2012_10", "2012_11", "2012_12", "2013_01", "2013_02", "2013_03", "2013_04", "2013_05", "2013_06", "2013_07", "2013_08", "2013_09", "2013_10", "2013_11", "2013_12", "2014_01", "2014_02", "2014_03", "2014_04", "2014_05", "2014_06", "2014_07", "2014_08", "2014_09", "2014_10", "2014_11", "2014_12", "2015_01", "2015_02", "2015_03", "2015_04", "2015_05", "2015_06", "2015_07", "2015_08", "2015_09", "2015_10", "2015_11", "2015_12", "2016_01", "2016_02", "2016_03", "2016_04", "2016_05", "2016_06", "2016_07", "2016_08", "2016_09", "2016_10", "2016_11", "2016_12", "2017_01", "2017_02", "2017_03", "2017_04", "2017_05", "2017_06", "2017_07", "2017_08", "2017_09", "2017_10", "2017_11", "2017_12", "2018_01", "2018_02", "2018_03", "2018_04", "2018_05", "2018_06", "2018_07", "2018_08", "2018_09", "2018_10", "2018_11", "2018_12", "2019_01", "2019_02", "2019_03", "2019_04", "2019_05", "2019_06", "2019_07", "2019_08", "2019_09", "2019_10", "2019_11", "2019_12", "2020_01", "2020_02", "2020_03", "2020_04", "2020_05", "2020_06", "2020_07", "2020_08", "2020_09", "2020_10", "2020_11", "2020_12", "2021_01", "2021_02", "2021_03", "2021_04", "2021_05", "2021_06", "2021_07", "2021_08", "2021_09", "2021_10", "2021_11", "2021_12", "2022_01", "2022_02", "2022_03", "2022_04", "2022_05", "2022_06", "2022_07", "2022_08", "2022_09", "2022_10", "2022_11", "2022_12", "2023_01", "2023_02", "2023_03", "2023_04", "2023_05", "2023_06", "2023_07", "2023_08", "2023_09", "2023_10", "2023_11", "2023_12", "2024_01", "2024_02", "2024_03", "2024_04", "2024_05", "2024_06")
-
-data_2 = select(data_1, "Indicador", "2007_01", "2007_02", "2007_03", "2007_04", "2007_05", "2007_06", "2007_07", "2007_08", "2007_09", "2007_10", "2007_11", "2007_12", "2008_01", "2008_02", "2008_03", "2008_04", "2008_05", "2008_06", "2008_07", "2008_08", "2008_09", "2008_10", "2008_11", "2008_12", "2009_01", "2009_02", "2009_03", "2009_04", "2009_05", "2009_06", "2009_07", "2009_08", "2009_09", "2009_10", "2009_11", "2009_12", "2010_01", "2010_02", "2010_03", "2010_04", "2010_05", "2010_06", "2010_07", "2010_08", "2010_09", "2010_10", "2010_11", "2010_12", "2011_01", "2011_02", "2011_03", "2011_04", "2011_05", "2011_06", "2011_07", "2011_08", "2011_09", "2011_10", "2011_11", "2011_12", "2012_01", "2012_02", "2012_03", "2012_04", "2012_05", "2012_06", "2012_07", "2012_08", "2012_09", "2012_10", "2012_11", "2012_12", "2013_01", "2013_02", "2013_03", "2013_04", "2013_05", "2013_06", "2013_07", "2013_08", "2013_09", "2013_10", "2013_11", "2013_12", "2014_01", "2014_02", "2014_03", "2014_04", "2014_05", "2014_06", "2014_07", "2014_08", "2014_09", "2014_10", "2014_11", "2014_12", "2015_01", "2015_02", "2015_03", "2015_04", "2015_05", "2015_06", "2015_07", "2015_08", "2015_09", "2015_10", "2015_11", "2015_12", "2016_01", "2016_02", "2016_03", "2016_04", "2016_05", "2016_06", "2016_07", "2016_08", "2016_09", "2016_10", "2016_11", "2016_12", "2017_01", "2017_02", "2017_03", "2017_04", "2017_05", "2017_06", "2017_07", "2017_08", "2017_09", "2017_10", "2017_11", "2017_12", "2018_01", "2018_02", "2018_03", "2018_04", "2018_05", "2018_06", "2018_07", "2018_08", "2018_09", "2018_10", "2018_11", "2018_12", "2019_01", "2019_02", "2019_03", "2019_04", "2019_05", "2019_06", "2019_07", "2019_08", "2019_09", "2019_10", "2019_11", "2019_12", "2020_01", "2020_02", "2020_03", "2020_04", "2020_05", "2020_06", "2020_07", "2020_08", "2020_09", "2020_10", "2020_11", "2020_12", "2021_01", "2021_02", "2021_03", "2021_04", "2021_05", "2021_06", "2021_07", "2021_08", "2021_09", "2021_10", "2021_11", "2021_12", "2022_01", "2022_02", "2022_03", "2022_04", "2022_05", "2022_06", "2022_07", "2022_08", "2022_09", "2022_10", "2022_11", "2022_12", "2023_01", "2023_02", "2023_03", "2023_04", "2023_05", "2023_06", "2023_07", "2023_08", "2023_09", "2023_10", "2023_11", "2023_12", "2024_01", "2024_02", "2024_03", "2024_04", "2024_05", "2024_06")
 
 {
 data_3 = data_2 %>% 
@@ -201,7 +202,8 @@ data_3 = data_2 %>%
              "2022_07", "2022_08", "2022_09", "2022_10", "2022_11", "2022_12", 
              "2023_01", "2023_02", "2023_03", "2023_04", "2023_05", "2023_06", 
              "2023_07", "2023_08", "2023_09", "2023_10", "2023_11", "2023_12", 
-             "2024_01", "2024_02", "2024_03", "2024_04", "2024_05", "2024_06"),
+             "2024_01", "2024_02", "2024_03", "2024_04", "2024_05", "2024_06",
+             "2024_07","2024_08"),
     names_to = "date", 
     values_to = "value"
   )
@@ -223,6 +225,9 @@ data_6= data_5%>%
 
 data_6$fecha <- as.Date(data_6$fecha, format = "%Y-%m-%d")
 
+# Rango de fechas
+data_7 <- subset(data_6, fecha >= as.Date("2007-01-01") & fecha <= as.Date("2024-08-01"))
+
 # Casos NA
 {
 data_7 = data_6 %>% 
@@ -235,60 +240,39 @@ colSums(is.na(data_6))
 
   # Estadística descriptiva -------------------------------------------------------
 # TOTAL NACIONAL-Producción de Petróleo Crudo 
-summary(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)
-describe(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)
-var(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`, na.rm = TRUE)
+stargazer(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`, summary = T,out = "TN_prod_crudo.tex")
 
 # TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles) 
-summary(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
-describe(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
-var(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)
+stargazer(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`, summary = T,out = "TN_exp_crudo.tex")
 
 # TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles) 
-summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
-describe(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
-var(summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`))
+stargazer(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`, summary = T,out = "TN_mp_ref.tex")
 
 # TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles) 
-summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
-describe(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)
-var(summary(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`))
+stargazer(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`, summary = T,out = "TN_prod_derv.tex")
 
-# TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) 
-summary(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
-describe(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
-var(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)
-  
+# TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) imp_derv
+stargazer(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`, summary = T,out = "TN_imp_derv.tex")
+
 # TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
-summary(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)
-describe(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)
-var(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)
+stargazer(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`, summary = T,out = "TN_cons_derv.tex")
 
 # TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) 
-summary(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)
-describe(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)
-var(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)
+stargazer(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`, summary = T,out = "TN_exp_petro.tex")
 
-# TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) 
-summary(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)
-describe(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)
-var(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)
+# TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)  
+stargazer(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`, summary = T,out = "TN_exp_derv.tex")
 
-# Precio Promedio Mensual WTI 
-summary(data_6$`Precio Promedio Mensual WTI`)
-describe(data_6$`Precio Promedio Mensual WTI`)
-var(data_6$`Precio Promedio Mensual WTI`)
+# Precio Promedio Mensual WTI  
+stargazer(data_6$`Precio Promedio Mensual WTI`, summary = T,out = "p_wti.tex")
 
 # Precio Promedio Mensual Brent 
-summary(data_6$`Precio Promedio Mensual Brent`)
-describe(data_6$`Precio Promedio Mensual Brent`)
-var(data_6$`Precio Promedio Mensual Brent`)
+stargazer(data_6$`Precio Promedio Mensual Brent`, summary = T,out = "p_brent.tex")
 
 # Gráfica -----------------------------------------------------------------
 {
 ggplot(data_6, aes(x = fecha)) +
   geom_line(aes(y = `TOTAL NACIONAL-Producción de Petróleo Crudo`, color = "Producción de Petróleo Crudo"), size = 1) +
-  geom_point(aes(y = `TOTAL NACIONAL-Producción de Petróleo Crudo`, color = "Datos Puntuales"), size = 1.5) +
   labs(
     title = "Evolución de la Producción de Petróleo Crudo en Ecuador (2007 - 2024)",
     x = "Fecha",
@@ -313,45 +297,221 @@ ggplot(data_6, aes(x = fecha)) +
 }
 
 # TOTAL NACIONAL-Producción de Petróleo Crudo 
-ggplot(data_clean3, aes(x = fecha, y = `TOTAL NACIONAL-Producción de Petróleo Crudo`))+
-  geom_line()+
-  geom_point()+
+{
+mean_1<-mean(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)/1000
+plot_prod_petroleao <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-Producción de Petróleo Crudo` / 1000)) +
+  geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+  geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
   theme_minimal() +
-  theme_classic()
+  labs(
+    title = "TOTAL NACIONAL-Producción de Petróleo Crudo",
+    x = "PERIODO",
+    y = "Total Nacional (En miles de barriles)",
+    caption = "Fuente: Banco Central del Ecuador"
+  ) +
+  theme_classic() +
+  # Agregar líneas horizontales en valores específicos
+  geom_hline(yintercept = c(15.4571), linetype = "dashed", color = "red")
 
+pdf("plot_prod_petroleao.pdf", height = 5.5, width = 8)
+plot_prod_petroleao
+dev.off()
+}  
 
 # TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles) 
-
-
-
+{
+mean_2<-mean(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)/1000
+plot_exp_petroleao <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(10.88419), linetype = "dashed", color = "red")
+  
+pdf("plot_exp_petroleao.pdf", height = 5.5, width = 8)
+plot_exp_petroleao
+dev.off()  
+}  
+  
 # TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles) 
-
-
-
+{
+mean_3<-mean(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)/1000
+plot_prima_refinada <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(4.400424), linetype = "dashed", color = "red")
+  
+pdf("plot_prima_refinada.pdf", height = 5.5, width = 8)
+plot_prima_refinada
+dev.off()  
+}  
+  
 # TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles) 
-
-
+{
+mean_4<-mean(data_6$`TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)`)/1000
+plot_prod_deriv <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(5.912452), linetype = "dashed", color = "red")
+  
+pdf("plot_prod_deriv.pdf", height = 5.5, width = 8)
+plot_prod_deriv
+dev.off()    
+}
 
 # TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) 
-
-
+{
+mean_5<-mean(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)/1000
+plot_imp_deriv <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(4.125026), linetype = "dashed", color = "red")
+  
+pdf("plot_imp_deriv.pdf", height = 5.5, width = 8)
+plot_imp_deriv
+dev.off()   
+}  
 
 # TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
-
-
+{
+mean_6<-mean(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)/1000
+plot_cons_inter <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(7.231809), linetype = "dashed", color = "red")
+  
+pdf("plot_cons_inter.pdf", height = 5.5, width = 8)
+plot_cons_inter
+dev.off()     
+}
 
 # TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) 
-
-
-
+{
+mean_7<-mean(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)/1000
+plot_exp_petro <- ggplot(data_6, aes(x = fecha, y = `TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) ",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(10.88419), linetype = "dashed", color = "red")
+  
+pdf("plot_exp_petro.pdf", height = 5.5, width = 8)
+plot_exp_petro
+dev.off()  
+}  
+  
 # TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) 
-
-
+{
+mean_8<-mean(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)/1000
+plot_exp_deriv <- ggplot(data_6, aes(x = fecha, y = `TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)` / 1000)) +
+    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+    theme_minimal() +
+    labs(
+      title = "TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) ",
+      x = "PERIODO",
+      y = "Total Nacional (En miles de barriles)",
+      caption = "Fuente: Banco Central del Ecuador"
+    ) +
+    theme_classic() +
+    # Agregar líneas horizontales en valores específicos
+    geom_hline(yintercept = c(0.9871987), linetype = "dashed", color = "red")
+  
+pdf("plot_exp_deriv.pdf", height = 5.5, width = 8)
+plot_exp_deriv
+dev.off()  
+}
 
 # Precio Promedio Mensual WTI 
+{
+mean_9<-mean(data_6$`Precio Promedio Mensual WTI`)
+plot_prec_WTI <- ggplot(data_6, aes(x = fecha, y = `Precio Promedio Mensual WTI`)) +
+  geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+  geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  theme_minimal() +
+  labs(
+    title = "Precio Promedio Mensual WTI ",
+    x = "PERIODO",
+    y = "Precio Promedio Mensual WTI ",
+    caption = "Fuente: Banco Central del Ecuador"
+  ) +
+  theme_classic() +
+  # Agregar líneas horizontales en valores específicos
+  geom_hline(yintercept = c(73.01302), linetype = "dashed", color = "red")
 
-
+pdf("plot_prec_WTI.pdf", height = 5.5, width = 8)
+plot_prec_WTI
+dev.off()  
+}
 
 # Precio Promedio Mensual Brent 
-
-
+{
+mean_10<-mean(data_6$`Precio Promedio Mensual Brent`)
+plot_prec_brent <- ggplot(data_6, aes(x = fecha, y = `Precio Promedio Mensual Brent`)) +
+                            geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
+                            geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+                            theme_minimal() +
+                            labs(
+                              title = "Precio Promedio Mensual Brent ",
+                              x = "PERIODO",
+                              y = "Precio Promedio Mensual Brent",
+                              caption = "Fuente: Banco Central del Ecuador"
+                            ) +
+                            theme_classic() +
+                            # Agregar líneas horizontales en valores específicos
+                            geom_hline(yintercept = c(78.00485), linetype = "dashed", color = "red")
+                          
+pdf("plot_prec_brent.pdf", height = 5.5, width = 8)
+plot_prec_brent
+dev.off()   
+}
