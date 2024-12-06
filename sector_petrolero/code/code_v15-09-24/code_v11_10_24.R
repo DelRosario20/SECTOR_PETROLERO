@@ -225,9 +225,13 @@ data_6= data_5%>%
 
 data_6$fecha <- as.Date(data_6$fecha, format = "%Y-%m-%d")
 
-# Rango de fechas
-data_7 <- subset(data_6, fecha >= as.Date("2007-01-01") & fecha <= as.Date("2024-08-01"))
+# Datos anuales
+data_7 <- data_6 %>%
+  mutate(fecha = as.Date(paste0(format(fecha, "%Y"), "-01-01"))) %>%  # Convertir a inicio del año
+  group_by(fecha) %>%                                                # Agrupar por fecha (ahora anual)
+  summarise(across(where(is.numeric), sum, na.rm = TRUE))            # Sumar columnas numéricas
 
+str(data_7)
 # Casos NA
 {
 data_7 = data_6 %>% 
@@ -238,7 +242,7 @@ data_8 = data_7 %>%
 }
 colSums(is.na(data_6))
 
-  # Estadística descriptiva -------------------------------------------------------
+# Estadística descriptiva -------------------------------------------------------
 # TOTAL NACIONAL-Producción de Petróleo Crudo 
 stargazer(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`, summary = T,out = "TN_prod_crudo.tex")
 
@@ -251,7 +255,7 @@ stargazer(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles d
 # TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles) 
 stargazer(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`, summary = T,out = "TN_prod_derv.tex")
 
-# TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) imp_derv
+# TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)
 stargazer(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`, summary = T,out = "TN_imp_derv.tex")
 
 # TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
@@ -269,6 +273,39 @@ stargazer(data_6$`Precio Promedio Mensual WTI`, summary = T,out = "p_wti.tex")
 # Precio Promedio Mensual Brent 
 stargazer(data_6$`Precio Promedio Mensual Brent`, summary = T,out = "p_brent.tex")
 
+# EStadístia descriptiva individual total --------------------------
+# Función para generar y exportar resumen descriptivo para una variable
+generar_resumen <- function(variable, nombre_archivo) {
+  # Crear un data frame con las estadísticas descriptivas
+  resumen <- data.frame(
+    N = length(variable),
+    Mean = mean(variable, na.rm = TRUE),
+    `St. Dev` = sd(variable, na.rm = TRUE),
+    Min = min(variable, na.rm = TRUE),
+    Max = max(variable, na.rm = TRUE)
+  )
+  
+  # Exportar la tabla a un archivo .tex
+  stargazer(
+    resumen,
+    summary = FALSE,
+    rownames = FALSE,
+    type = "latex",
+    out = nombre_archivo
+  )
+}
+
+# Generar tablas individuales para cada variable
+generar_resumen(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`, "TN_prod_crudo.tex")
+generar_resumen(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`, "TN_exp_crudo.tex")
+generar_resumen(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`, "TN_mp_ref.tex")
+generar_resumen(data_6$`TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)`, "TN_prod_derv.tex")
+generar_resumen(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`, "TN_imp_derv.tex")
+generar_resumen(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`, "TN_cons_derv.tex")
+generar_resumen(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`, "TN_exp_petro.tex")
+generar_resumen(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`, "TN_exp_derv.tex")
+generar_resumen(data_6$`Precio Promedio Mensual WTI`, "p_wti.tex")
+generar_resumen(data_6$`Precio Promedio Mensual Brent`, "p_brent.tex")
 # Gráfica -----------------------------------------------------------------
 {
 ggplot(data_6, aes(x = fecha)) +
@@ -298,20 +335,21 @@ ggplot(data_6, aes(x = fecha)) +
 
 # TOTAL NACIONAL-Producción de Petróleo Crudo 
 {
-mean_1<-mean(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`)/1000
-plot_prod_petroleao <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-Producción de Petróleo Crudo` / 1000)) +
-  geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-  geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+plot_prod_petroleao <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-Producción de Petróleo Crudo`))) +
+  geom_line(color = "black") +
   theme_minimal() +
   labs(
     title = "TOTAL NACIONAL-Producción de Petróleo Crudo",
-    x = "PERIODO",
-    y = "Total Nacional (En miles de barriles)",
-    caption = "Fuente: Banco Central del Ecuador"
+    x = "PERIODOS",
+    y = "Producción de petroleo crudo",
+    caption = "Nota: Valores en escala logarítmica"
   ) +
-  theme_classic() +
-  # Agregar líneas horizontales en valores específicos
-  geom_hline(yintercept = c(15.4571), linetype = "dashed", color = "red")
+  scale_x_date(
+    date_breaks = "1 year",          # Mostrar etiquetas cada año
+    date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme_classic()
 
 pdf("plot_prod_petroleao.pdf", height = 5.5, width = 8)
 plot_prod_petroleao
@@ -320,20 +358,21 @@ dev.off()
 
 # TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles) 
 {
-mean_2<-mean(data_6$`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)/1000
-plot_exp_petroleao <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_exp_petroleao <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
-      title = "TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)",
-      x = "PERIODO",
-      y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      title = "TOTAL NACIONAL-Producción de Petróleo Crudo",
+      x = "PERIODOS",
+      y = "Producción de petroleo crudo",
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(10.88419), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
 pdf("plot_exp_petroleao.pdf", height = 5.5, width = 8)
 plot_exp_petroleao
@@ -342,20 +381,21 @@ dev.off()
   
 # TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles) 
 {
-mean_3<-mean(data_6$`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`)/1000
-plot_prima_refinada <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_prima_refinada <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
       title = "TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)",
-      x = "PERIODO",
+      x = "PERIODOS",
       y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(4.400424), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
 pdf("plot_prima_refinada.pdf", height = 5.5, width = 8)
 plot_prima_refinada
@@ -364,20 +404,21 @@ dev.off()
   
 # TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles) 
 {
-mean_4<-mean(data_6$`TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)`)/1000
-plot_prod_deriv <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_prod_deriv <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
       title = "TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)",
-      x = "PERIODO",
+      x = "PERIODOS",
       y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(5.912452), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
 pdf("plot_prod_deriv.pdf", height = 5.5, width = 8)
 plot_prod_deriv
@@ -386,21 +427,23 @@ dev.off()
 
 # TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles) 
 {
-mean_5<-mean(data_6$`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`)/1000
-plot_imp_deriv <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  
+  plot_imp_deriv <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
       title = "TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)",
-      x = "PERIODO",
+      x = "PERIODOS",
       y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(4.125026), linetype = "dashed", color = "red")
-  
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
+
 pdf("plot_imp_deriv.pdf", height = 5.5, width = 8)
 plot_imp_deriv
 dev.off()   
@@ -408,20 +451,21 @@ dev.off()
 
 # TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
 {
-mean_6<-mean(data_6$`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`)/1000
-plot_cons_inter <- ggplot(data_6, aes(x = fecha, y = `TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_cons_inter <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
       title = "TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)",
-      x = "PERIODO",
+      x = "PERIODOS",
       y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(7.231809), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
 pdf("plot_cons_inter.pdf", height = 5.5, width = 8)
 plot_cons_inter
@@ -430,20 +474,21 @@ dev.off()
 
 # TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) 
 {
-mean_7<-mean(data_6$`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`)/1000
-plot_exp_petro <- ggplot(data_6, aes(x = fecha, y = `TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_exp_petro <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
       title = "TOTAL EXPORTACIONES DE PETRÓLEO (miles de barriles) ",
-      x = "PERIODO",
+      x = "PERIODOS",
       y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(10.88419), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
 pdf("plot_exp_petro.pdf", height = 5.5, width = 8)
 plot_exp_petro
@@ -452,20 +497,21 @@ dev.off()
   
 # TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) 
 {
-mean_8<-mean(data_6$`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`)/1000
-plot_exp_deriv <- ggplot(data_6, aes(x = fecha, y = `TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)` / 1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_exp_deriv <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles)`))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
       title = "TOTAL EXPORTACIONES DE DERIVADOS (miles de barriles) ",
-      x = "PERIODO",
+      x = "PERIODOS",
       y = "Total Nacional (En miles de barriles)",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(0.9871987), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
 pdf("plot_exp_deriv.pdf", height = 5.5, width = 8)
 plot_exp_deriv
@@ -474,20 +520,21 @@ dev.off()
 
 # Precio Promedio Mensual WTI 
 {
-mean_9<-mean(data_6$`Precio Promedio Mensual WTI`)
-plot_prec_WTI <- ggplot(data_6, aes(x = fecha, y = `Precio Promedio Mensual WTI`)) +
-  geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-  geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
-  theme_minimal() +
-  labs(
-    title = "Precio Promedio Mensual WTI ",
-    x = "PERIODO",
-    y = "Precio Promedio Mensual WTI ",
-    caption = "Fuente: Banco Central del Ecuador"
-  ) +
-  theme_classic() +
-  # Agregar líneas horizontales en valores específicos
-  geom_hline(yintercept = c(73.01302), linetype = "dashed", color = "red")
+  plot_prec_WTI <- ggplot(data_7, aes(x = fecha, y = log(`Precio Promedio Mensual WTI`))) +
+    geom_line(color = "black") +
+    theme_minimal() +
+    labs(
+      title = "Precio Promedio Mensual WTI ",
+      x = "PERIODOS",
+      y = "Precio Promedio Mensual WTI ",
+      caption = "Nota: Valores en escala logarítmica"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
 
 pdf("plot_prec_WTI.pdf", height = 5.5, width = 8)
 plot_prec_WTI
@@ -496,22 +543,200 @@ dev.off()
 
 # Precio Promedio Mensual Brent 
 {
-mean_10<-mean(data_6$`Precio Promedio Mensual Brent`)
-plot_prec_brent <- ggplot(data_6, aes(x = fecha, y = `Precio Promedio Mensual Brent`)) +
-                            geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-                            geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
-                            theme_minimal() +
-                            labs(
-                              title = "Precio Promedio Mensual Brent ",
-                              x = "PERIODO",
-                              y = "Precio Promedio Mensual Brent",
-                              caption = "Fuente: Banco Central del Ecuador"
-                            ) +
-                            theme_classic() +
-                            # Agregar líneas horizontales en valores específicos
-                            geom_hline(yintercept = c(78.00485), linetype = "dashed", color = "red")
-                          
+  plot_prec_brent <- ggplot(data_7, aes(x = fecha, y = log(`Precio Promedio Mensual Brent`))) +
+    geom_line(color = "black") +
+    theme_minimal() +
+    labs(
+      title = "Precio Promedio Mensual Brent",
+      x = "PERIODOS",
+      y = "Precio Promedio Mensual Brent ",
+      caption = "Nota: Valores en escala logarítmica"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic() 
+           
 pdf("plot_prec_brent.pdf", height = 5.5, width = 8)
 plot_prec_brent
-dev.off()   
+dev.off()  -
+}
+
+# Regresiones --------------------------------------------------------------
+{
+# Producción de Petróleo Crudo vs. Exportaciones de Petróleo Crudo
+modelo_1 <- lm(`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)` ~ `TOTAL NACIONAL-Producción de Petróleo Crudo`, data = data_6)
+summary(modelo_1)
+
+# Producción de Derivados vs. Importación de Derivados
+modelo_2 <- lm(`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)` ~ `TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)`, data = data_6)
+summary(modelo_2)
+
+# Precio Promedio WTI vs. Exportaciones de Petróleo Crudo
+modelo_3 <- lm(`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)` ~ `Precio Promedio Mensual WTI`, data = data_6)
+summary(modelo_3)
+
+# Producción de Petróleo Crudo vs. Materia Prima Procesada en Refinerías
+modelo_4 <- lm(`TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`
+ ~ `TOTAL NACIONAL-Producción de Petróleo Crudo`, data = data_6)
+summary(modelo_4)
+
+# Consumo Interno de Derivados vs. Importación de Derivados
+modelo_5 <- lm(`TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)` ~ `TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`, data = data_6)
+summary(modelo_5)
+
+# Producción de Petróleo Crudo vs. Consumo Interno de Derivados
+modelo_6 <- lm(`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)` ~ `TOTAL NACIONAL-Producción de Petróleo Crudo`, data = data_6)
+summary(modelo_6)
+}
+# Gráficos de dispersión con línea de regresión
+{
+# Producción de Petróleo Crudo vs. Exportaciones de Petróleo Crudo
+{
+  plot_modelo1 <- ggplot(data_6, aes(x = `TOTAL NACIONAL-Producción de Petróleo Crudo`/1000, y = `TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`/1000)) +
+    geom_point() + geom_smooth(method = "lm") +
+    labs(
+      title = "Producción vs Exportaciones de Petróleo Crudo (Miles de barriles)",
+         x = "Producción de Petróleo Crudo(Miles de barriles)",
+         y = "Exportaciones de Petróleo Crudo (Miles de barriles)",
+        caption = "Nota: Valores en unidades de miles"
+    ) +
+    theme_classic()
+  
+  pdf("plot_modelo1.pdf", height = 5.5, width = 8)
+  plot_modelo1
+  dev.off()
+}  
+
+# Producción de Derivados vs. Importación de Derivados
+{
+  plot_modelo2 <- ggplot(data_6, aes(x = `TOTAL NACIONAL-PRODUCCIÓN DE DERIVADOS (Miles de barriles)`/1000, y = `TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`/1000)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = F) +
+    labs(
+      title = "Producción de Derivados vs. Importación de Derivados(Miles de barriles)",
+      x = "Producción de Derivados (Miles de barriles)",
+      y = "Importación de Derivados (Miles de barriles)",
+      caption = "Nota: Valores en unidades de miles"
+      ) +
+    theme_classic()
+  
+  pdf("plot_modelo2.pdf", height = 5.5, width = 8)
+  plot_modelo2
+  dev.off()  
+}
+
+# Precio Promedio WTI vs. Exportaciones de Petróleo Crudo
+{
+  plot_modelo3 <- ggplot(data_6, aes(x = `Precio Promedio Mensual WTI`, y = `TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = F) +
+    labs(
+      title = "Precio Promedio WTI vs. Exportaciones de Petróleo Crudo",
+      x = "Precio Promedio Mensual WTI",
+      y = "Exportaciones de Petróleo Crudo (Miles de barriles)"
+      ) + 
+    theme_classic()
+  
+  pdf("plot_modelo3.pdf", height = 5.5, width = 8)
+  plot_modelo3
+  dev.off()
+}  
+
+# Producción de Petróleo Crudo vs. Materia Prima Procesada en Refinerías
+{
+  plot_modelo4 <- ggplot(data_6, aes(x = `TOTAL NACIONAL-Producción de Petróleo Crudo`/1000, y = `TOTAL NACIONAL-MATERIA PRIMA PROCESADA EN REFINERÍAS (Miles de barriles)`/1000)) +
+    geom_point() + 
+    geom_smooth(method = "lm", se = F) +
+    labs(
+      title = "Producción de Petróleo Crudo vs. Materia Prima Procesada en Refinerías(Miles de barriles)",
+      x = "Producción de Petróleo Curdo (Miles de barriles)",
+      y = "Materia Prima Procesada en Refinerías (Miles de barriles)",
+      caption = "Nota: Valores en unidades de miles"
+    ) +
+    theme_classic()
+  
+  pdf("plot_modelo4.pdf", height = 5.5, width = 8)
+  plot_modelo4
+  dev.off()
+}  
+
+# Consumo Interno de Derivados vs. Importación de Derivados
+{
+  plot_modelo5 <- ggplot(data_6, aes(x = `TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`/1000, y = `TOTAL NACIONAL-IMPORTACIÓN DE DERIVADOS (Miles de barriles)`/1000)) +
+    geom_point() + 
+    geom_smooth(method = "lm", se = F) +
+    labs(
+      title = "Consumo Interno de Derivados vs. Importación de Derivados(Miles de barriles)",
+      x = "Consumo Interno de Derivados (Miles de barriles)",
+      y = "Importación de Derivados (Miles de barriles)",
+      caption = "Nota: Valores en unidades de miles"
+      ) +
+    theme_classic()
+  
+  pdf("plot_modelo5.pdf", height = 5.5, width = 8)
+  plot_modelo5
+  dev.off()
+}
+
+# Producción de Petróleo Crudo vs. Consumo Interno de Derivados
+{
+  plot_modelo6 <- ggplot(data_6, aes(x = `TOTAL NACIONAL-Producción de Petróleo Crudo`/1000, y = `TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`/1000)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = F) +
+    labs(
+      title = "Producción de Petróleo Crudo vs. Consumo Interno de Derivados(Miles de barriles)",
+      x = "Producción de Petróleo Crudo (Miles de barriles)",
+      y = "Consumo Interno de Derivados (Miles de barriles)",
+      caption = "Nota: Valores en unidades de miles"
+      ) + 
+    theme_classic()
+  
+  pdf("plot_modelo6.pdf", height = 5.5, width = 8)
+  plot_modelo6
+  dev.off()
+}
+}
+# Resultado de las regresiones
+{
+{
+stargazer(modelo_1, modelo_2, modelo_3, modelo_4, modelo_5, modelo_6, 
+          type = "latex", 
+          title = "Resultados de las Regresiones",
+          dep.var.labels = c("Exportaciones de Petróleo", 
+                             "Importaciones de Derivados", 
+                             "Exportaciones de Petróleo", 
+                             "Materia Procesada en Refinerías", 
+                             "Importaciones de Derivados", 
+                             "Consumo Interno de Derivados"),
+          covariate.labels = c("Producción de Petróleo", 
+                               "Producción de Derivados", 
+                               "Precio WTI", 
+                               "Producción de Petróleo", 
+                               "Consumo Interno de Derivados", 
+                               "Producción de Petróleo"),
+          out = "resultados_regresiones.tex")
+} # Total
+{
+  # Producción de Petróleo Crudo vs. Exportaciones de Petróleo Crudo
+  stargazer(modelo_1, type = "latex", out = "modelo_1.tex", title = "Modelo 1: Exportaciones vs Producción")
+  
+  # Producción de Derivados vs. Importación de Derivados
+  stargazer(modelo_2, type = "latex", out = "modelo_2.tex", title = "Modelo 2: Importaciones vs Producción de Derivados")
+  
+  # Precio Promedio WTI vs. Exportaciones de Petróleo Crudo
+  stargazer(modelo_3, type = "latex", out = "modelo_3.tex", title = "Modelo 3: Precio Promedio WTI vs. Exportaciones de Petróleo Crudo")
+  
+  # Producción de Petróleo Crudo vs. Materia Prima Procesada en Refinerías
+  stargazer(modelo_4, type = "latex", out = "modelo_4.tex", title = "Modelo 4: Producción de Petróleo Crudo vs. Materia Prima Procesada en Refinerías")
+  
+  # Consumo Interno de Derivados vs. Importación de Derivados
+  stargazer(modelo_5, type = "latex", out = "modelo_5.tex", title = "Modelo 5: Consumo Interno de Derivados vs. Importación de Derivados")
+  
+  # Producción de Petróleo Crudo vs. Consumo Interno de Derivados
+  stargazer(modelo_6, type = "latex", out = "modelo_6.tex", title = "Modelo 6: Producción de Petróleo Crudo vs. Consumo Interno de Derivados")
+  
+} # Individual
 }
