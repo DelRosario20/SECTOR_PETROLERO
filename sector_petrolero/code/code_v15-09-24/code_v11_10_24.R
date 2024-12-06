@@ -596,7 +596,7 @@ summary(modelo_6)
 # Producción de Petróleo Crudo vs. Exportaciones de Petróleo Crudo
 {
   plot_modelo1 <- ggplot(data_6, aes(x = `TOTAL NACIONAL-Producción de Petróleo Crudo`/1000, y = `TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`/1000)) +
-    geom_point() + geom_smooth(method = "lm") +
+    geom_point() + geom_smooth(method = "lm", se = F) +
     labs(
       title = "Producción vs Exportaciones de Petróleo Crudo (Miles de barriles)",
          x = "Producción de Petróleo Crudo(Miles de barriles)",
