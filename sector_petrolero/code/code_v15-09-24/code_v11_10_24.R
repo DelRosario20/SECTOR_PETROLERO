@@ -227,9 +227,9 @@ data_6$fecha <- as.Date(data_6$fecha, format = "%Y-%m-%d")
 
 # Datos anuales
 data_7 <- data_6 %>%
-  mutate(fecha = as.Date(paste0(format(fecha, "%Y"), "-01-01"))) %>%  # Convertir a inicio del año
-  group_by(fecha) %>%                                                # Agrupar por fecha (ahora anual)
-  summarise(across(where(is.numeric), sum, na.rm = TRUE))            # Sumar columnas numéricas
+  mutate(fecha = as.Date(paste0(format(fecha, "%Y"), "-01-01"))) %>%  
+  group_by(fecha) %>%                                                
+  summarise(across(where(is.numeric), sum, na.rm = TRUE))            
 
 str(data_7)
 # Casos NA
