@@ -232,6 +232,10 @@ data_7 <- data_6 %>%
   summarise(across(where(is.numeric), sum, na.rm = TRUE))            
 
 str(data_7)
+
+# Sin incluir el ultimo año
+data_8 <- data_7 %>% filter(format(fecha, "%Y") != "2024")
+
 # Casos NA
 {
 data_7 = data_6 %>% 
@@ -335,7 +339,7 @@ ggplot(data_6, aes(x = fecha)) +
 
 # TOTAL NACIONAL-Producción de Petróleo Crudo 
 {
-plot_prod_petroleao <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-Producción de Petróleo Crudo`))) +
+plot_prod_petroleao <- ggplot(data_8, aes(x = fecha, y = log(`TOTAL NACIONAL-Producción de Petróleo Crudo`))) +
   geom_line(color = "black") +
   theme_minimal() +
   labs(
@@ -358,7 +362,7 @@ dev.off()
 
 # TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles) 
 {
-  plot_exp_petroleao <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`))) +
+  plot_exp_petroleao <- ggplot(data_8, aes(x = fecha, y = log(`TOTAL NACIONAL-EXPORTACIONES DE PETRÓLEO CRUDO (Miles de barriles)`))) +
     geom_line(color = "black") +
     theme_minimal() +
     labs(
@@ -451,7 +455,7 @@ dev.off()
 
 # TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles) 
 {
-  plot_cons_inter <- ggplot(data_7, aes(x = fecha, y = log(`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`))) +
+  plot_cons_inter <- ggplot(data_8, aes(x = fecha, y = log(`TOTAL NACIONAL-CONSUMO INTERNO DE DERIVADOS (Miles de barriles)`))) +
     geom_line(color = "black") +
     theme_minimal() +
     labs(
@@ -520,7 +524,7 @@ dev.off()
 
 # Precio Promedio Mensual WTI 
 {
-  plot_prec_WTI <- ggplot(data_7, aes(x = fecha, y = log(`Precio Promedio Mensual WTI`))) +
+  plot_prec_WTI <- ggplot(data_8, aes(x = fecha, y = log(`Precio Promedio Mensual WTI`))) +
     geom_line(color = "black") +
     theme_minimal() +
     labs(
@@ -740,3 +744,19 @@ stargazer(modelo_1, modelo_2, modelo_3, modelo_4, modelo_5, modelo_6,
   
 } # Individual
 }
+
+
+# Ejercicio ----------------------------------------------------------------
+hist(data_6$`TOTAL NACIONAL-Producción de Petróleo Crudo`, mean)
+
+# Exportación de resultados -----------------------------------------------
+write.csv(data_6,"sector_petrolero_mensual.csv")
+write.csv(data_8,"sctor_petrolero_anual.csv")
+
+
+
+
+
+
+
+

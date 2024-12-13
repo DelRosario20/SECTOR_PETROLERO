@@ -1,15 +1,16 @@
-{
-library(readxl)
-library(tidyverse)
-library(lubridate)
-library(zoo)
-library(psych)
-library(ggplot2)
-library(stats)
-library(modeest)
-}
-
 # Limpieza ----------------------------------------------------------------
+# Librería
+{
+  library(readxl)
+  library(tidyverse)
+  library(lubridate)
+  library(zoo)
+  library(psych)
+  library(ggplot2)
+  library(stats)
+  library(modeest)
+  library(stargazer)
+}
 setwd("C:/Users/USER/Documents/YRF_PROJECT/")
 
 data <- read_excel("sector_financiero/data/modificada/BMS_CAMBIOS.xlsx")
@@ -80,8 +81,25 @@ data_clean2 <- data_clean %>%
   sapply(data_clean3, class)
 }# Convertir variables a numericas
 
-# Limpieza de datos atipicos
+# Eleminar columna
+data_clean3 <- data_clean3 %>%
+  select(-tasas_de_interes_referenciales_porcentajes_activa_de_corto_plazo_para_el)
 
+# Rango para evitar NA
+data_clean3 <- data_clean3 %>%
+  filter(!(fecha %in% as.Date(c("2024-09-13", "2024-09-20", "2024-09-27", "2024-09-30","2024-09-06"))))
+
+# Convertir a datos anuales
+# Datos anuales
+data_clean4 <- data_clean3 %>%
+  mutate(fecha = as.Date(paste0(format(fecha, "%Y"), "-01-01"))) %>%  
+  group_by(fecha) %>%                                                
+  summarise(across(where(is.numeric), sum, na.rm = TRUE))  
+
+data_clean5 <- data_clean4 %>% filter(format(fecha, "%Y") != "2024")
+
+# Limpieza de datos atipicos
+{
 # Valores "n.d" y "n.d." a NA
 colSums(is.na(data_clean3))
 
@@ -94,248 +112,177 @@ data_clean3[] <- lapply(data_clean3, function(x) {
 data_clean4 <- subset(data_clean3, fecha >= as.Date("2007-01-01") & fecha <= as.Date("2024-08-31"))
 
 # Eliminar valores NA
-
+}
 
 # Estadística descriptiva ---------------------------------------------------------
-# Reservas internacionales
-summary(data_clean3$reservas_internacionales)
-describe(data_clean3$reservas_internacionales)
-var(data_clean3$reservas_internacionales)
+generar_resumen <- function(variable, nombre_archivo) {
+  # Crear un data frame con las estadísticas descriptivas
+  resumen <- data.frame(
+    N = length(variable),
+    Mean = mean(variable, na.rm = TRUE),
+    `St. Dev` = sd(variable, na.rm = TRUE),
+    Min = min(variable, na.rm = TRUE),
+    Max = max(variable, na.rm = TRUE)
+  )
+  
+  # Exportar la tabla a un archivo .tex
+  stargazer(
+    resumen,
+    summary = FALSE,
+    rownames = FALSE,
+    type = "latex",
+    out = nombre_archivo
+  )
+}
 
-#Pasivos monenetarios
-summary(data_clean3$pasivos_monetarios)
-describe(data_clean3$pasivos_monetarios)
-var(data_clean3$pasivos_monetarios)
-
-# Emisión monetaria
-summary(data_clean3$emision_monetaria)
-describe(data_clean3$emision_monetaria)
-var(data_clean3$emision_monetaria)
-
-# Reservas bancarias
-summary(data_clean3$reservas_bancarias)
-describe(data_clean3$reservas_bancarias)
-var(data_clean3$reservas_bancarias)
-
-# Depositos a la vista
-summary(data_clean3$depositos_a_la_vista)
-describe(data_clean3$depositos_a_la_vista)
-var(data_clean3$depositos_a_la_vista, na.rm = TRUE)
-
-# Cuasidinero total
-summary(data_clean3$cuasidinero_total)
-describe(data_clean3$cuasidinero_total)
-var(data_clean3$cuasidinero_total, na.rm = TRUE)
-
-# Credito al   sector privado total
-summary(data_clean3$credito_al_sector_privado_total)
-describe(data_clean3$credito_al_sector_privado_total)
-var(data_clean3$credito_al_sector_privado_total, na.rm = TRUE)
-
-# Tasas de interés referecniales (%) básicas
-summary(data_clean3$tasas_de_interes_referenciales_porcentajes_basica)
-describe(data_clean3$tasas_de_interes_referenciales_porcentajes_basica)
-var(data_clean3$tasas_de_interes_referenciales_porcentajes_basica, na.rm = TRUE)
-
-# Tasas de interés referecniales (%) pásiva
-summary(data_clean3$tasas_de_interes_referenciales_porcentajes_pasiva)
-describe(data_clean3$tasas_de_interes_referenciales_porcentajes_pasiva)
-var(data_clean3$tasas_de_interes_referenciales_porcentajes_pasiva, na.rm = TRUE)
-
-# Tasas de interés referecniales (%) activa
-summary(data_clean3$tasas_de_interes_referenciales_porcentajes_activa)
-describe(data_clean3$tasas_de_interes_referenciales_porcentajes_activa)
-var(data_clean3$tasas_de_interes_referenciales_porcentajes_activa, na.rm = TRUE)
-
-# Inflación mensual
-summary(data_clean3$inflacion_mensual)
-describe(data_clean3$inflacion_mensual)
-var(data_clean3$inflacion_mensual, na.rm = TRUE)
-
-# Inflación anual
-summary(data_clean3$inflacion_anual)
-describe(data_clean3$inflacion_anual)
-var(data_clean3$inflacion_anual, na.rm = TRUE)
-
-# Inflación acumulada
-summary(data_clean3$inflacion_acumulada)
-describe(data_clean3$inflacion_acumulada)
-var(data_clean3$inflacion_acumulada, na.rm = TRUE)
-
-
-colSums(is.na(data_clean3))
-
+# Generar tablas individuales para cada variable
+generar_resumen(data_clean3$reservas_internacionales, "reser_int.tex")
+generar_resumen(data_clean3$depositos_a_la_vista, "dep_vist.tex")
+generar_resumen(data_clean3$cuasidinero_total, "cuas_din.tex")
+generar_resumen(data_clean3$credito_al_sector_privado_total, "cred_pt.tex")
+generar_resumen(data_clean3$tasas_de_interes_referenciales_porcentajes_activa, "tasas_act.tex")
+generar_resumen(data_clean3$inflacion_anual, "inflac_anual.tex")
 
 # Gráfica -----------------------------------------------------------------
 # Reservas internacionales
 {
-mean_1<-mean(data_clean3$reservas_internacionales)/1000
-plot_reser_int <- ggplot(data_clean3, aes(x = fecha, y = reservas_internacionales/1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
-    theme_minimal() +
-    labs(
-      title = "Rservas Internacionales (En millones de dólares)",
-      x = "PERIODO",
-      y = "Reservas Internacionales",
-      caption = "Fuente: Banco Central del Ecuador"
-    ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(4.554053), linetype = "dashed", color = "red")
+plot_reser_int <- ggplot(data_clean5, aes(x = fecha, y = log(reservas_internacionales))) +
+  geom_line(color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Evolución de las reservas internacionales",
+    x = "PERIODOS",
+    y = "Reservas Internacionales",
+    caption = "Nota: Valores en escala logarítmica"
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",          # Mostrar etiquetas cada año
+    date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme_classic()
   
 pdf("plot_reser_int.pdf", height = 5.5, width = 8)
 plot_reser_int
 dev.off()
 }  
-  
-#Pasivos monenetarios
-{
-  mean_2<-mean(data_clean3$pasivos_monetarios)/1000
-  plot_pasiv_mon <- ggplot(data_clean3, aes(x = fecha, y = pasivos_monetarios/1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
-    theme_minimal() +
-    labs(
-      title = "Pasivos monetarios (En millones de dólares)",
-      x = "PERIODO",
-      y = "Pasivos monetarios",
-      caption = "Fuente: Banco Central del Ecuador"
-    ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(3.617957), linetype = "dashed", color = "red")
-  
-  pdf("plot_pasiv_mon.pdf", height = 5.5, width = 8)
-  plot_pasiv_mon
-  dev.off()
-}
-
-# Emisión monetaria
-{
-  mean_3<-mean(data_clean3$emision_monetaria)
-  plot_emis_mon <- ggplot(data_clean3, aes(x = fecha, y = emision_monetaria)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
-    theme_minimal() +
-    labs(
-      title = "Pasivos monetarios (En millones de dólares)",
-      x = "PERIODO",
-      y = "Pasivos monetarios",
-      caption = "Fuente: Banco Central del Ecuador"
-    ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(mean_3), linetype = "dashed", color = "red")
-  
-  pdf("plot_pasiv_mon.pdf", height = 5.5, width = 8)
-  plot_pasiv_mon
-  dev.off()
-  }
-
-
-# Reservas bancarias
-{
-  mean_4<-mean(data_clean3$reservas_bancarias)/1000
-  plot_rser_banc <- ggplot(data_clean3, aes(x = fecha, y = reservas_bancarias /1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
-    theme_minimal() +
-    labs(
-      title = "Reservas bancarias (En millones de dólares)",
-      x = "PERIODO",
-      y = "Rservas bancarias",
-      caption = "Fuente: Banco Central del Ecuador"
-    ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(mean_4), linetype = "dashed", color = "red")
-  
-  pdf("plot_rser_banc.pdf", height = 5.5, width = 8)
-  plot_rser_banc
-  dev.off()
-  }
 
 # Depositos a la vista
 {
-  mean_5<-mean(data_clean3$depositos_a_la_vista, na.rm = TRUE)/1000 
-  plot_dep_vista <- ggplot(data_clean3, aes(x = fecha, y = depositos_a_la_vista /1000)) +
-    geom_area(fill = "lightblue", alpha = 0.5) +  # Sombrea la zona debajo de la curva con color y transparencia
-    geom_line(color = "#00008B") +  # Dibuja la línea sobre el área sombreada
+  plot_dep_vista <- ggplot(data_clean5, aes(x = fecha, y = log(depositos_a_la_vista))) +
+    geom_line(color = "black") +
     theme_minimal() +
     labs(
-      title = "Depositos a la vista (En millones de dólares)",
-      x = "PERIODO",
+      title = "Evolución de los depositos a la vista",
+      x = "PERIODOS",
       y = "Depositos a la vista",
-      caption = "Fuente: Banco Central del Ecuador"
+      caption = "Nota: Valores en escala logarítmica"
     ) +
-    theme_classic() +
-    # Agregar líneas horizontales en valores específicos
-    geom_hline(yintercept = c(mean_5), linetype = "dashed", color = "red")
+    scale_x_date(
+      date_breaks = "1 year",          # Mostrar etiquetas cada año
+      date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
   
-  pdf("plot_rser_banc.pdf", height = 5.5, width = 8)
-  plot_rser_banc
+  pdf("plot_dep_vista.pdf", height = 5.5, width = 8)
+  plot_dep_vista
   dev.off()
-  }
-
+}
 
 # Cuasidinero total
-ggplot(data_clean3, aes(x = fecha, y = cuasidinero_total))+
-  geom_line()+
-  geom_point()+
+{
+  plot_cuas_total <- ggplot(data_clean5, aes(x = fecha, y = log(cuasidinero_total))) +
+  geom_line(color = "black") +
   theme_minimal() +
+  labs(
+    title = "Evolución del cuasidinero total",
+    x = "PERIODOS",
+    y = "Cuasidinero total",
+    caption = "Nota: Valores en escala logarítmica"
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",          # Mostrar etiquetas cada año
+    date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme_classic()
+  
+  pdf("plot_cuas_total.pdf", height = 5.5, width = 8)
+  plot_cuas_total
+  dev.off()
+}
 
 # Credito al   sector privado total
-ggplot(data_clean3, aes(x = fecha, y = credito_al_sector_privado_total))+
-  geom_line()+
-  geom_point()+
+{
+  plot_sect_pt<- ggplot(data_clean5, aes(x = fecha, y = log(credito_al_sector_privado_total))) +
+  geom_line(color = "black") +
   theme_minimal() +
+  labs(
+    title = "Evolución de las reservas internacionales",
+    x = "PERIODOS",
+    y = "Reservas Internacionales",
+    caption = "Nota: Valores en escala logarítmica"
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",          # Mostrar etiquetas cada año
+    date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme_classic()
-
-# Tasas de interés referecniales (%) básicas
-ggplot(data_clean3, aes(x = fecha, y = tasas_de_interes_referenciales_porcentajes_basica))+
-  geom_line()+
-  geom_point()+
+  
+  pdf("plot_sect_pt.pdf", height = 5.5, width = 8)
+  plot_sect_pt
+  dev.off()
+}  
+  
+# Tasas de interés referenciales (%) activa
+{
+  plot_tas_activa<- ggplot(data_clean5, aes(x = fecha, y = tasas_de_interes_referenciales_porcentajes_activa)) +
+  geom_line(color = "black") +
   theme_minimal() +
+  labs(
+    title = "Evolución de la tasas de interés referenciales activa (%)",
+    x = "PERIODOS",
+    y = "Tasas de interés referenciales activa (%)",
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",          # Mostrar etiquetas cada año
+    date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme_classic()
-
-# Tasas de interés referecniales (%) activa
-ggplot(data_clean3, aes(x = fecha, y = tasas_de_interes_referenciales_porcentajes_activa))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
-
-# Tasas de interés referecniales (%) pásiva
-ggplot(data_clean3, aes(x = fecha, y = tasas_de_interes_referenciales_porcentajes_pasiva))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
-
-# Inflación mensual
-ggplot(data_clean3, aes(x = fecha, y = inflacion_mensual))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
+  
+  pdf("plot_tas_activa.pdf", height = 5.5, width = 8)
+  plot_tas_activa
+  dev.off()
+}    
 
 # Inflación anual
-ggplot(data_clean3, aes(x = fecha, y = inflacion_anual))+
-  geom_line()+
-  geom_point()+
+{
+  plot_infl_anual<- ggplot(data_clean5, aes(x = fecha, y = inflacion_anual)) +
+  geom_line(color = "black") +
   theme_minimal() +
+  labs(
+    title = "Evolución de la inflación anual",
+    x = "PERIODOS",
+    y = "Inflación anual",
+    caption = "Nota: Valores en escala logarítmica"
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",          # Mostrar etiquetas cada año
+    date_labels = "%Y"              # Formato del año (e.g., 2007, 2008)
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme_classic()
+  
+  pdf("plot_infl_anual.pdf", height = 5.5, width = 8)
+  plot_infl_anual
+  dev.off()
+}
 
-
-# Inflación acumulada
-ggplot(data_clean3, aes(x = fecha, y = inflacion_acumulada))+
-  geom_line()+
-  geom_point()+
-  theme_minimal() +
-  theme_classic()
-
-
-
+# Exportación de resultados -----------------------------------------------
+# Guarda los dataframes como CSV desde cada proyecto
+write.csv(data_clean3,"sector_financiero_mensual.csv")
+write.csv(data_clean5,"sector_financiero_anual.csv")
 
